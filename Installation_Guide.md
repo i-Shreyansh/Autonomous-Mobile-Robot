@@ -1,7 +1,7 @@
 # **System config**
 
-Operating System = windows
-RAM = 8gb or above (recomended)
+* Operating System = windows
+* RAM = 8gb or above (recomended)
 
 # Installation
 
