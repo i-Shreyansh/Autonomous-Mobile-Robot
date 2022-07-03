@@ -1,8 +1,8 @@
-import pygame
 import cv2
 import time
 from PIL import Image
 import numpy as np
+import  pandas as pd
 import os
 
 def loader():
@@ -18,6 +18,7 @@ def camera(device=0):
 
 def Showcam():
     vid = cv2.VideoCapture(cam)
+    
   
     while(True):
         global frame
@@ -36,7 +37,7 @@ def cv2_to_pil(frame):
     im.show()  
     im_np = np.asarray(im) 
     return im_np
-    
+
 def pil_to_cv2(PILframe):
     im = cv2.cvtColor(PILframe, cv2.COLOR_RGB2BGR)
     cv2.imshow("Frame",im)
@@ -48,13 +49,19 @@ def cmd(command):
     str='cmd /c "%s"'%(command)
     os.system(str)
 
+def read_file(Name):
+    file = open(Name,'r')
+    file = file.read()
+    return file
+
+
+camera(0)
+
 if __name__ == '__main__':
     #loader()
-    camera(1)
-    print()
+    camera(0)
     Showcam()
-    pill=cv2_to_pil(frame)
-    pil_to_cv2(pill)
+
 
 
     

@@ -1,1 +1,0 @@
-os.system('cmd /c"deactivate"')
