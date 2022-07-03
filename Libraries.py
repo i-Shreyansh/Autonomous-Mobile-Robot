@@ -6,8 +6,9 @@ import  pandas as pd
 import os
 
 def loader():
+    cmd("cls")
     for i in range(5):
-        time.sleep(1)
+        time.sleep(0.5)
         print('.',end='')
     print("done")
 
@@ -49,10 +50,15 @@ def cmd(command):
     str='cmd /c "%s"'%(command)
     os.system(str)
 
-def read_file(Name):
-    file = open(Name,'r')
+def read_file(file):
+    file = open(file,'r')
     file = file.read()
     return file
+def write_file(file,data) :
+    loader()
+    with open(file,'w') as f:
+        f.write(str(data))
+    
 
 
 camera(0)
