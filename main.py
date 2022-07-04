@@ -1,4 +1,11 @@
 from Libraries import *
+from Train import *
+from Vision import *
 
 
-loader()
+
+def run():
+    loader()
+
+if __name__ == '__main__':
+    run()

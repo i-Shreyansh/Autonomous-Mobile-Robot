@@ -1,9 +1,9 @@
-import cv2
 import time
-from PIL import Image
 import numpy as np
 import  pandas as pd
 import os
+import cv2
+from  PIL import Image
 
 def loader():
     cmd("cls")
@@ -12,25 +12,7 @@ def loader():
         print('.',end='')
     print("done")
 
-def camera(device=0):
-    global cam
-    cam = device
-    return cam
 
-def Showcam():
-    vid = cv2.VideoCapture(cam)
-    
-  
-    while(True):
-        global frame
-        ret, frame = vid.read()
-        cv2.imshow('frame', frame)
-        
-        if cv2.waitKey(1) &  0xFF == ord('q'):
-            break
-        
-    vid.release()
-    cv2.destroyAllWindows()
 
 def cv2_to_pil(frame):
     im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -61,13 +43,9 @@ def write_file(file,data) :
     
 
 
-camera(0)
+
 
 if __name__ == '__main__':
-    #loader()
-    camera(0)
-    Showcam()
-
-
+    loader()
 
     

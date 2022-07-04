@@ -1,6 +1,9 @@
 from Libraries import *
 import boto3
-import json
+import tensorflow as tf
+
+
+
 
 
 
@@ -39,9 +42,9 @@ if __name__ == '__main__':
 
     #photo location
     photo = r"img.jpg"
-    response = aws_detect_labels(photo)
+    #response = aws_detect_labels(photo)
     
-    write_file('res.txt',response)
+    #write_file('res.txt',response)
     response = read_file('res.txt')
     print(response)
 
