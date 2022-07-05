@@ -2,6 +2,7 @@ from unittest import result
 from PIL import Image
 import cv2
 from cv2 import waitKey
+from cv2 import bitwise_and
 from Libraries import * 
 
 def camera(device=0):
@@ -104,57 +105,85 @@ def Border(image,top=10,bottom=10,left=10,right=10,
                              type, None, value = color)
     return img
 
+#COLOR DETECTION :
 def ScrollBar():
     cv2.namedWindow("TrackBars")
     cv2.resizeWindow("TrackBars",640,250)
-    cv2.createTrackbar("Hue Min","TrackBars",0,179,lambda a: a)
-    cv2.createTrackbar("Hue Max","TrackBars",179,179,lambda a: a)
-    cv2.createTrackbar("Sat Min","TrackBars",0,255,lambda a: a)
-    cv2.createTrackbar("Sat Max","TrackBars",255,255,lambda a: a)
-    cv2.createTrackbar("Val Min","TrackBars",0,255,lambda a: a)
-    window = cv2.createTrackbar("Val Max","TrackBars",0,255,lambda a: a)
+    cv2.createTrackbar("Hue Min","TrackBars",0,1790,lambda a: a)
+    cv2.createTrackbar("Hue Max","TrackBars",1790,1790,lambda a: a)
+    cv2.createTrackbar("Sat Min","TrackBars",0,2550,lambda a: a)
+    cv2.createTrackbar("Sat Max","TrackBars",2550,2550,lambda a: a)
+    cv2.createTrackbar("Val Min","TrackBars",0,2550,lambda a: a)
+    window = cv2.createTrackbar("Val Max","TrackBars",0,2550,lambda a: a)
     return window
 def Values():   
-    h_min = cv2.getTrackbarPos("Hue Min","TrackBars")
-    h_max = cv2.getTrackbarPos("Hue Max", "TrackBars")
-    s_min = cv2.getTrackbarPos("Sat Min", "TrackBars")
-    s_max = cv2.getTrackbarPos("Sat Max", "TrackBars")
-    v_min = cv2.getTrackbarPos("Val Min", "TrackBars")
-    v_max = cv2.getTrackbarPos("Val Max", "TrackBars")
-
+    h_min = cv2.getTrackbarPos("Hue Min","TrackBars")/10
+    h_max = cv2.getTrackbarPos("Hue Max", "TrackBars")/10
+    s_min = cv2.getTrackbarPos("Sat Min", "TrackBars")/10
+    s_max = cv2.getTrackbarPos("Sat Max", "TrackBars")/10
+    v_min = cv2.getTrackbarPos("Val Min", "TrackBars")/10
+    v_max = cv2.getTrackbarPos("Val Max", "TrackBars")/10
+    print(h_min,h_max,s_min,s_max,v_min,v_max)
     return h_min,h_max,s_min,s_max,v_min,v_max
-def Mask(img):
+def Mask(img,HSV_arr):
 
-    h_min,h_max,s_min,s_max,v_min,v_max = Values()
+    h_min,h_max,s_min,s_max,v_min,v_max = HSV_arr
     imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
     lower = np.array([h_min,s_min,v_min])
     upper = np.array([h_max,s_max,v_max])
     mask = cv2.inRange(imgHSV,lower,upper)
     return mask
 
+def BITWISE_and(img,mask):
+    imgResult = cv2.bitwise_and(img,img,mask=mask)
+    return imgResult
+
+#Shape detection:
+ 
+def getContours(img):
+    contours,hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        print(area)
+        if area<500:
+            cv2.drawContours(imgContour, cnt, -1, (255, 0, 0), 3)
+            peri = cv2.arcLength(cnt,True)
+            #print(peri)
+            approx = cv2.approxPolyDP(cnt,0.02*peri,True)
+            print(len(approx))
+            objCor = len(approx)
+            x, y, w, h = cv2.boundingRect(approx)
+ 
+            if objCor ==3: objectType ="Tri"
+            elif objCor == 4:
+                aspRatio = w/float(h)
+                if aspRatio >0.98 and aspRatio <1.03: objectType= "Square"
+                else:objectType="Rectangle"
+            elif objCor>4: objectType= "Circles"
+            else:objectType="None"
+def addImages(img1,w1,img2,w2):
+    img = cv2.addWeighted(img1, w1, img2, w2, 0.0);
+    return img
+
 camera(1)
 if __name__ == '__main__':
     #loader()
     cmd('cls')
-    photo = "img.jpg"
-    global col
-    col = colors()
+    path='img.jpg'
     ScrollBar()
-
-    while True:
-        img = cv2.imread(photo)
+    while  True:
+        img = cv2.imread(path)
         img = imgResize(img,500,500)
-        print(Values())
-        imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-        mask = Mask(img)
-        imgResult = cv2.bitwise_and(img,img,mask=mask)     
-
-                
-        result = stackImages(0.6,([img,imgHSV],[mask,imgResult]),True)
-        cv2.imshow("images" , result)
-
+        imgMask = BITWISE_and(img,Mask(img,(0 ,13, 32, 140 ,0 ,255)))
+        mask = Mask(img,100 ,119 ,72, 177 ,0 ,168))
+        imgMask2 = cv2.bitwise_and(img,img,mask=mask)
+        result = addImages(imgMask, 1, imgMask2, 1)
+   
+        
+        imgStack = stackImages(0.6,([img,imgMask],[mask,result]))
+        cv2.imshow("Stack", imgStack)
+        
         if cv2.waitKey(1) &  0xFF == ord('q'):
             break
-    
 
 
