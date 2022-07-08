@@ -1,8 +1,10 @@
+import re
 from unittest import result
 from PIL import Image
 import cv2
 from cv2 import waitKey
 from cv2 import bitwise_and
+from pyparsing import col
 from Libraries import * 
 
 def camera(device=0):
@@ -30,15 +32,7 @@ def imgResize(img,width,height):
     imgResize = cv2.resize(img,(width,height))
     return imgResize
 
-def stackImages(scale,imgArray,border=False):
-    if border==True:
-        h,v=imgArray
-        for i in range(len(h)):
-            h[i] = Border(h[i])
-        for i in range(len(v)):
-            v[i] = Border(v[i])
-        imgArray = (h,v)
-
+def stackImages(scale,imgArray):
     rows = len(imgArray)
     cols = len(imgArray[0])
     rowsAvailable = isinstance(imgArray[0], list)
@@ -83,6 +77,7 @@ def joinImages(ImgArr,horizontal=True,border=False):
     return img
 
 def colors():
+    global col
     col = {'red':(36,51,235),'green':(77,249,117),"blue":(245,35,0),
             'yellow':(85,253,255),'black':(0,0,0,),'white':(255,255,255),
             'pink':(128,54,234),'orange':(80,134,240),'violet':(123,16,57),
@@ -91,11 +86,12 @@ def colors():
             'dark green':(12,62,24),'skin':(130,158,240),'lavender':(187,130127)}
     return col
 
-def Rectangle(img,x,y,h,w,color=(0,0,255),thick=2,fill=False):
+def Rectangle(img,x,y,w,h,color=(0,0,255),thick=2,fill=False):
     if fill== True:
         var = cv2.FILLED
     else:
         var = thick
+    x,y,w,h = int(x),int(y),int(w),int(h)
     img = cv2.rectangle(img,(x,y),(x+w,y+h),color,var)
     return img
 def Border(image,top=10,bottom=10,left=10,right=10,
@@ -142,48 +138,59 @@ def BITWISE_and(img,mask):
  
 def getContours(img):
     contours,hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+    return contours
+
+def drawCountours(contours,imgContour):
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        print(area)
         if area<500:
             cv2.drawContours(imgContour, cnt, -1, (255, 0, 0), 3)
             peri = cv2.arcLength(cnt,True)
             #print(peri)
             approx = cv2.approxPolyDP(cnt,0.02*peri,True)
-            print(len(approx))
             objCor = len(approx)
             x, y, w, h = cv2.boundingRect(approx)
- 
-            if objCor ==3: objectType ="Tri"
-            elif objCor == 4:
-                aspRatio = w/float(h)
-                if aspRatio >0.98 and aspRatio <1.03: objectType= "Square"
-                else:objectType="Rectangle"
-            elif objCor>4: objectType= "Circles"
-            else:objectType="None"
+            cv2.rectangle(imgContour,(x,y),(x+w,y+h),(0,255,0),2)
 def addImages(img1,w1,img2,w2):
     img = cv2.addWeighted(img1, w1, img2, w2, 0.0);
     return img
 
-camera(1)
+#FaceDetection
+def face_detection(img,color):
+    facecascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    face = facecascade.detectMultiScale(gray,1.3,5)
+    for (x,y,w,h) in face:
+            face = Rectangle(img,x,y,w,h,color)
+    cv2.imshow("Face_Detection",img)
+    return  img
+
+
+camera(0)
 if __name__ == '__main__':
     #loader()
     cmd('cls')
+    colors()
     path='img.jpg'
-    ScrollBar()
-    while  True:
-        img = cv2.imread(path)
-        img = imgResize(img,500,500)
-        imgMask = BITWISE_and(img,Mask(img,(0 ,13, 32, 140 ,0 ,255)))
-        mask = Mask(img,100 ,119 ,72, 177 ,0 ,168))
-        imgMask2 = cv2.bitwise_and(img,img,mask=mask)
-        result = addImages(imgMask, 1, imgMask2, 1)
+    response = read_file('res.txt')
    
+    re = {0.4990893006324768,0.9324960708618164,0.12056122720241547,0.06681863218545914}    
+    while  True:
+
+        img = cv2.imread(path)
+        x,y,w,h = re
+        rect = imgResize(img ,100,100)
+        rect = Rectangle(rect,x*100,y*100,w*100,h*100,col['red'],1)
         
-        imgStack = stackImages(0.6,([img,imgMask],[mask,result]))
+
+        imgStack = stackImages(0.1,([img]))
         cv2.imshow("Stack", imgStack)
+        cv2.imshow("rect", rect)
         
-        if cv2.waitKey(1) &  0xFF == ord('q'):
+        if cv2.waitKey(1) &  0xFF == 27:
             break
+   
+    cv2.destroyAllWindows()
+    
 
 
