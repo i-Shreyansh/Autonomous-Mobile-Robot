@@ -1,3 +1,4 @@
+from marshal import load
 import re
 from unittest import result
 from PIL import Image
@@ -94,6 +95,7 @@ def Rectangle(img,x,y,w,h,color=(0,0,255),thick=2,fill=False):
     x,y,w,h = int(x),int(y),int(w),int(h)
     img = cv2.rectangle(img,(x,y),(x+w,y+h),color,var)
     return img
+
 def Border(image,top=10,bottom=10,left=10,right=10,
          type=cv2.BORDER_CONSTANT, color=0):
 
@@ -172,20 +174,35 @@ if __name__ == '__main__':
     cmd('cls')
     colors()
     path='img.jpg'
-    response = read_file('res.txt')
-   
-    re = {0.4990893006324768,0.9324960708618164,0.12056122720241547,0.06681863218545914}    
+    import json
+    response = str(read_file('res.txt'))
+    re = response.replace("\'", "\"")
+
+    re = json.loads(re)
+    x = re['Labels'][0]['Instances'][0]["BoundingBox"]['Left']
+    y = re['Labels'][0]['Instances'][0]["BoundingBox"]['Top']
+    w = re['Labels'][0]['Instances'][0]["BoundingBox"]['Width']
+    h = re['Labels'][0]['Instances'][0]["BoundingBox"]['Height']
+    
     while  True:
 
         img = cv2.imread(path)
-        x,y,w,h = re
-        rect = imgResize(img ,100,100)
-        rect = Rectangle(rect,x*100,y*100,w*100,h*100,col['red'],1)
+        rect = img.copy()
+        H,W=rect.shape[0], rect.shape[1]
+   
+
+        x1=float(x)*W
+        y1=float(y)*H
+        w1=float(w)*W
+        h1=float(h)*H
+        print(x,y,w,h)
+        rect = Rectangle(rect,x1,y1,w1,h1,col['red'],10)
+        
         
 
-        imgStack = stackImages(0.1,([img]))
+        imgStack = stackImages(0.1,([img,rect]))
         cv2.imshow("Stack", imgStack)
-        cv2.imshow("rect", rect)
+      
         
         if cv2.waitKey(1) &  0xFF == 27:
             break

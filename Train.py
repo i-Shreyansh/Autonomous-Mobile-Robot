@@ -22,8 +22,8 @@ def aws_detect_labels(photo):
         img = img.read()
 
     client = boto3.client('rekognition'
-                        ,aws_access_key_id=access_key
-                        ,aws_secret_access_key=secret_key
+                        ,aws_access_key_id=aws_access_key_id
+                        ,aws_secret_access_key=aws_secret_access_key
                         ,region_name='ap-south-1')
     response = client.detect_labels(Image={'Bytes':img},MaxLabels=1)
 #
@@ -42,9 +42,9 @@ if __name__ == '__main__':
 
     #photo location
     photo = r"img.jpg"
-    #response = aws_detect_labels(photo)
+    response = aws_detect_labels(photo)
     
-    #write_file('res.txt',response)
+    write_file('res.txt',response)
     response = read_file('res.txt')
     print(response)
 
