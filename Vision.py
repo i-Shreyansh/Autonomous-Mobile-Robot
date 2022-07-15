@@ -195,7 +195,7 @@ if __name__ == '__main__':
         y1=float(y)*H
         w1=float(w)*W
         h1=float(h)*H
-        print(x,y,w,h)
+   
         rect = Rectangle(rect,x1,y1,w1,h1,col['red'],10)
         
         
