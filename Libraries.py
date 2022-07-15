@@ -44,8 +44,3 @@ def write_file(file,data) :
 
 
 
-
-if __name__ == '__main__':
-    loader()
-
-    

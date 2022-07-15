@@ -17,7 +17,7 @@ def keys_extract(Name):
     id = read_file(Name)
     keys = dict(subString.split("=") for subString in id.split(","))
     return keys
-def aws_detect_labels(photo):
+def aws_detect_labels(photo,MaxLabels):
     with open(photo,'rb') as img:
         img = img.read()
 
@@ -25,7 +25,7 @@ def aws_detect_labels(photo):
                         ,aws_access_key_id=aws_access_key_id
                         ,aws_secret_access_key=aws_secret_access_key
                         ,region_name='ap-south-1')
-    response = client.detect_labels(Image={'Bytes':img},MaxLabels=1)
+    response = client.detect_labels(Image={'Bytes':img},MaxLabels=MaxLabels)
 #
    
     print(response)
@@ -33,21 +33,3 @@ def aws_detect_labels(photo):
     return response
 
 
-if __name__ == '__main__':
-    
-    cmd('cls') 
-    keys = pd.read_csv("credentials.csv")
-    access_key,secret_key = keys['Access key ID'].values[0],keys['Secret access key'].values[0]
-    AWS_keys(access_key,secret_key)
-
-    #photo location
-    photo = r"img.jpg"
-    response = aws_detect_labels(photo)
-    
-    write_file('res.txt',response)
-    response = read_file('res.txt')
-    print(response)
-
-
-
-    

@@ -96,6 +96,10 @@ def Rectangle(img,x,y,w,h,color=(0,0,255),thick=2,fill=False):
     img = cv2.rectangle(img,(x,y),(x+w,y+h),color,var)
     return img
 
+def  Text(img,txt,pt,scale,color,thick):
+    img = cv2.putText(img,txt,pt,cv2.FONT_HERSHEY_COMPLEX,scale,color,thick)
+    return img
+
 def Border(image,top=10,bottom=10,left=10,right=10,
          type=cv2.BORDER_CONSTANT, color=0):
 
@@ -166,48 +170,5 @@ def face_detection(img,color):
             face = Rectangle(img,x,y,w,h,color)
     cv2.imshow("Face_Detection",img)
     return  img
-
-
-camera(0)
-if __name__ == '__main__':
-    #loader()
-    cmd('cls')
-    colors()
-    path='img.jpg'
-    import json
-    response = str(read_file('res.txt'))
-    re = response.replace("\'", "\"")
-
-    re = json.loads(re)
-    x = re['Labels'][0]['Instances'][0]["BoundingBox"]['Left']
-    y = re['Labels'][0]['Instances'][0]["BoundingBox"]['Top']
-    w = re['Labels'][0]['Instances'][0]["BoundingBox"]['Width']
-    h = re['Labels'][0]['Instances'][0]["BoundingBox"]['Height']
-    
-    while  True:
-
-        img = cv2.imread(path)
-        rect = img.copy()
-        H,W=rect.shape[0], rect.shape[1]
-   
-
-        x1=float(x)*W
-        y1=float(y)*H
-        w1=float(w)*W
-        h1=float(h)*H
-   
-        rect = Rectangle(rect,x1,y1,w1,h1,col['red'],10)
-        
-        
-
-        imgStack = stackImages(0.1,([img,rect]))
-        cv2.imshow("Stack", imgStack)
-      
-        
-        if cv2.waitKey(1) &  0xFF == 27:
-            break
-   
-    cv2.destroyAllWindows()
-    
 
 
