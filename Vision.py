@@ -1,4 +1,4 @@
-from marshal import load
+
 import re
 from unittest import result
 from PIL import Image
@@ -77,15 +77,25 @@ def joinImages(ImgArr,horizontal=True,border=False):
         
     return img
 
-def colors():
+def colors(mode='bgr'):
     global col
     col = {'red':(36,51,235),'green':(77,249,117),"blue":(245,35,0),
             'yellow':(85,253,255),'black':(0,0,0,),'white':(255,255,255),
             'pink':(128,54,234),'orange':(80,134,240),'violet':(123,16,57),
             'purple':(124,27,116),'brown':(21,67,120),'sky blue':(253,251,115),
             'olive':(38,127,129),'gray':(192,192,192),'teal':(128,127,80),
-            'dark green':(12,62,24),'skin':(130,158,240),'lavender':(187,130127)}
-    return col
+            'dark green':(12,62,24),'skin':(130,158,240),'lavender':(187,130,127)}
+    if mode == 'bgr':
+        return col
+    elif mode == 'rgb':
+        for i in col.items():
+            color,tuple = i
+            b,g,r = tuple
+            tuple = (r,g,b)
+            col[color] = tuple
+        
+
+        return col
 
 def Rectangle(img,x,y,w,h,color=(0,0,255),thick=2,fill=False):
     if fill== True:
@@ -168,7 +178,7 @@ def face_detection(img,color):
     face = facecascade.detectMultiScale(gray,1.3,5)
     for (x,y,w,h) in face:
             face = Rectangle(img,x,y,w,h,color)
-    cv2.imshow("Face_Detection",img)
+    #cv2.imshow("Face_Detection",img)
     return  img
 
 

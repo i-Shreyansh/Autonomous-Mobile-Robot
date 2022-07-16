@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
         for labels in re['Labels']:
             x,y,w,z=0,0,0,0
-       
+            print(labels["Name"])
             for inst in labels["Instances"]:
                 x = float(inst["BoundingBox"]['Left'])*W
                 y = float(inst["BoundingBox"]['Top'])*H
@@ -56,7 +56,7 @@ if __name__ == '__main__':
       
         
 
-        imgStack = stackImages(0.1,([img,rect]))
+        imgStack = stackImages(0.5,([img,rect]))
         cv2.imshow("Stack", imgStack)
       
         

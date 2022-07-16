@@ -17,9 +17,9 @@ def loader():
 def cv2_to_pil(frame):
     im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     im = Image.fromarray(im)
-    im.show()  
-    im_np = np.asarray(im) 
-    return im_np
+    #im.show()  
+    #im = np.asarray(im) 
+    return im
 
 def pil_to_cv2(PILframe):
     im = cv2.cvtColor(PILframe, cv2.COLOR_RGB2BGR)
