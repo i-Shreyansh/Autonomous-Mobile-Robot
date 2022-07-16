@@ -1,6 +1,20 @@
+
 import pygame
 from Vision import *
 from Libraries import *
+
+def BrowseFiles(title="Browse file",initialdir=os.getcwd()):
+    from tkinter import filedialog,Tk
+    window = Tk()
+    window.title(title)
+    window.withdraw()
+    filepath = filedialog.askopenfilename(initialdir=initialdir
+                                         ,title=title)
+                                         #("all files","*.*") min 2
+                                         #, filetypes=type)
+    window.quit()
+ 
+    return filepath
 
 def cv2img_to_pygame(cv2img):
     """Convert cvimage into a pygame image"""
@@ -32,6 +46,7 @@ if __name__ == '__main__':
     fps = 60 
     cloack = pygame.time.Clock()
     
+    print(BrowseFiles())
     # infinite loop 
     start = True  
     while start:  
@@ -53,9 +68,10 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT: 
                 start = False  
                 pygame.quit() 
-        
+                quit()
                 
                 # quit the program.   
         # Draws the surface object to the screen.   
+    
     vid.release()
     cv2.destroyAllWindows()
